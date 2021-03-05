@@ -1,5 +1,8 @@
 package com.example.twitter.twitterDemo.controller;
 
+import com.example.twitter.twitterDemo.model.TwitterPost;
+import com.example.twitter.twitterDemo.service.TwitterService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -13,19 +16,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/twitterApi")
 public class TwitterController {
 
+    @Autowired
+    TwitterService twitterService;
+
+
     @PostMapping("/tweet")
     public String postTweet(@RequestParam(name = "message") String message) throws TwitterException {
-        Twitter twitter = TwitterFactory.getSingleton();
-        Status status = twitter.updateStatus(message);
-        return status.getText();
+        return twitterService.postTweet(message);
     }
 
+
     @GetMapping("/timeLine")
-    public static List<String> getHomeTimeLine() throws TwitterException {
-        Twitter twitter = TwitterFactory.getSingleton();
-        List<Status> statuses = twitter.getHomeTimeline();
-        return statuses.stream().map(
-                item -> item.getText()).collect(
-                Collectors.toList());
+    public List<TwitterPost> getHomeTimeLine() throws TwitterException {
+        return twitterService.getHomeTimeLine();
     }
 }
